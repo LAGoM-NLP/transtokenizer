@@ -1,1 +1,1 @@
-"""Unit test package for tik-to-tok."""
+"""Unit test package for transtokenizer."""

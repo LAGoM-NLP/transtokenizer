@@ -1,19 +1,19 @@
-# tik-to-tok
+# transtokenizer
 
 
-[![pypi](https://img.shields.io/pypi/v/tik-to-tok.svg)](https://pypi.org/project/tik-to-tok/)
-[![python](https://img.shields.io/pypi/pyversions/tik-to-tok.svg)](https://pypi.org/project/tik-to-tok/)
-[![Build Status](https://github.com/ipieter/tik-to-tok/actions/workflows/dev.yml/badge.svg)](https://github.com/ipieter/tik-to-tok/actions/workflows/dev.yml)
-[![codecov](https://codecov.io/gh/ipieter/tik-to-tok/branch/main/graphs/badge.svg)](https://codecov.io/github/ipieter/tik-to-tok)
+[![pypi](https://img.shields.io/pypi/v/transtokenizer.svg)](https://pypi.org/project/transtokenizer/)
+[![python](https://img.shields.io/pypi/pyversions/transtokenizer.svg)](https://pypi.org/project/transtokenizer/)
+[![Build Status](https://github.com/ipieter/transtokenizer/actions/workflows/dev.yml/badge.svg)](https://github.com/ipieter/transtokenizer/actions/workflows/dev.yml)
+[![codecov](https://codecov.io/gh/ipieter/transtokenizer/branch/main/graphs/badge.svg)](https://codecov.io/github/ipieter/transtokenizer)
 
 
 
 Token translation for language models
 
 
-* Documentation: <https://ipieter.github.io/tik-to-tok>
-* GitHub: <https://github.com/ipieter/tik-to-tok>
-* PyPI: <https://pypi.org/project/tik-to-tok/>
+* Documentation: <https://ipieter.github.io/transtokenizer>
+* GitHub: <https://github.com/ipieter/transtokenizer>
+* PyPI: <https://pypi.org/project/transtokenizer/>
 * Licence: MIT
 
 
@@ -24,7 +24,7 @@ Token translation for language models
 ## Usage
 
 ```python
-from tiktotok import transform_model
+from transtokenizer import transform_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 source_tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")

@@ -1,8 +1,8 @@
 [tool]
 [tool.poetry]
-name = "tik-to-tok"
+name = "transtokenizer"
 version = "0.1.0"
-homepage = "https://github.com/ipieter/tik-to-tok"
+homepage = "https://github.com/ipieter/transtokenizer"
 description = "Token translation for language models."
 authors = ["Pieter Delobelle <pieter.delobelle@kuleuven.be>"]
 readme = "README.md"
@@ -19,7 +19,7 @@ classifiers=[
     'Programming Language :: Python :: 3.9',
 ]
 packages = [
-    { include = "tiktotok" },
+    { include = "transtokenizer" },
     { include = "tests", format = "sdist" },
 ]
 

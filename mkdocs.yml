@@ -1,7 +1,7 @@
-site_name: tik-to-tok
-site_url: https://ipieter.github.io/tik-to-tok
-repo_url: https://github.com/ipieter/tik-to-tok
-repo_name: ipieter/tik-to-tok
+site_name: transtokenizer
+site_url: https://ipieter.github.io/transtokenizer
+repo_url: https://github.com/ipieter/transtokenizer
+repo_name: ipieter/transtokenizer
 #strict: true
 nav:
   - Home: index.md
@@ -51,7 +51,7 @@ plugins:
       lang: en
   - mkdocstrings:
       watch:
-        - tik-to-tok
+        - transtokenizer
 extra:
   social:
     - icon: fontawesome/brands/twitter
@@ -63,7 +63,7 @@ extra:
       link: https://github.com/waynerv/cookiecutter-pypackage
       name: Facebook
     - icon: fontawesome/brands/github
-      link: https://github.com/ipieter/tik-to-tok
+      link: https://github.com/ipieter/transtokenizer
       name: Github
     - icon: material/email
       link: "mailto:pieter.delobelle@kuleuven.be"

@@ -1,4 +1,4 @@
-"""Top-level package for tik-to-tok."""
+"""Top-level package for transtokenizer."""
 
 __author__ = """Pieter Delobelle"""
 __email__ = 'pieter.delobelle@kuleuven.be'

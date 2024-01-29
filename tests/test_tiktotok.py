@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Tests for `tiktotok` package."""
+"""Tests for `transtokenizer` package."""
 
 import pytest
 

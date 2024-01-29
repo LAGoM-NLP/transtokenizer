@@ -1,7 +1,7 @@
 # Usage
 
-To use tik-to-tok in a project
+To use transtokenizer in a project
 
 ```
-import tiktotok
+import transtokenizer
 ```
