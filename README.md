@@ -1,8 +1,8 @@
-# transtokenizer
+# transtokenizers
 
 
-[![pypi](https://img.shields.io/pypi/v/transtokenizer.svg)](https://pypi.org/project/transtokenizer/)
-[![python](https://img.shields.io/pypi/pyversions/transtokenizer.svg)](https://pypi.org/project/transtokenizer/)
+[![pypi](https://img.shields.io/pypi/v/trans-tokenizers.svg)](https://pypi.org/project/trans-tokenizers/)
+[![python](https://img.shields.io/pypi/pyversions/trans-tokenizers.svg)](https://pypi.org/project/trans-tokenizers/)
 [![Build Status](https://github.com/ipieter/transtokenizer/actions/workflows/dev.yml/badge.svg)](https://github.com/ipieter/transtokenizer/actions/workflows/dev.yml)
 [![codecov](https://codecov.io/gh/ipieter/transtokenizer/branch/main/graphs/badge.svg)](https://codecov.io/github/ipieter/transtokenizer)
 
@@ -13,7 +13,7 @@ Token translation for language models
 
 * Documentation: <https://ipieter.github.io/transtokenizer>
 * GitHub: <https://github.com/ipieter/transtokenizer>
-* PyPI: <https://pypi.org/project/transtokenizer/>
+* PyPI: <https://pypi.org/project/trans-tokenizers/>
 * Licence: MIT
 
 
@@ -24,7 +24,7 @@ Token translation for language models
 ## Usage
 
 ```python
-from transtokenizer import transform_model
+from transtokenizers import transform_model
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 source_tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-v0.1")

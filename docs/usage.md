@@ -1,7 +1,7 @@
 # Usage
 
-To use transtokenizer in a project
+To use transtokenizers in a project
 
 ```
-import transtokenizer
+import transtokenizers
 ```

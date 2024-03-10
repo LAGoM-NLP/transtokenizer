@@ -1,1 +1,1 @@
-"""Unit test package for transtokenizer."""
+"""Unit test package for transtokenizers."""
