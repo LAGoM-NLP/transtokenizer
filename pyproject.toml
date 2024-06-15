@@ -1,6 +1,6 @@
 [tool]
 [tool.poetry]
-name = "transtokenizer"
+name = "transtokenizers"
 version = "0.1.0"
 homepage = "https://github.com/ipieter/transtokenizer"
 description = "Token translation for language models."
@@ -19,7 +19,7 @@ classifiers=[
     'Programming Language :: Python :: 3.9',
 ]
 packages = [
-    { include = "transtokenizer" },
+    { include = "transtokenizers" },
     { include = "tests", format = "sdist" },
 ]
 

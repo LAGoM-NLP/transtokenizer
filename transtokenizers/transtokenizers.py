@@ -21,7 +21,7 @@ from datasets import load_dataset
 ALIGNMENT_UNIT = "WORDS"  # "TOKENS" or "WORDS"
 MIN_COUNT_REQUIRED_FOR_CONSIDERATION = 20
 
-home_path = os.environ['TT_HOME'] if "TT_HOME" in os.environ else Path("../notebooks/")
+home_path = os.environ['TT_HOME'] if "TT_HOME" in os.environ else Path("export")
 
 
 def get_dataset_iterator(dataset_name: str, source_language: str, target_language: str):
@@ -63,7 +63,7 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
                 return (
                     example['translation'][f"{Language.get(source_language).to_alpha3()}_Latn"],
                     example['translation'][f"{Language.get(target_language).to_alpha3()}_Latn"],
-                )
+                )   
 
     return DatasetWrapper(dataset)
 
@@ -346,7 +346,13 @@ def map_tokens(
 
     return tokenized_possible_translations, untokenized_possible_translations
 
-def smooth_mapping(target_tokenizer: str, tokenized_possible_translations: dict) -> dict:
+def extend_mapping(target_tokenizer: str, tokenized_possible_translations: dict) -> dict:
+    """
+    Tokens (e.g. long words) that don't get mapped from the parallel corpus are mapped using split tokens. All tokens inside that token 
+    and don't overlap, are used for that mapping. 
+
+    TODO example
+    """
         
     new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
 
@@ -417,7 +423,7 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
     new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
 
     # load the old model
-    model = transformers.AutoModelForCausalLM.from_pretrained(source_model)
+    model: transformers.AutoModelForCausalLM = transformers.AutoModelForCausalLM.from_pretrained(source_model)
 
     with torch.no_grad():
         # get the embeddings of the OLM model
@@ -445,52 +451,54 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
         from functools import reduce
 
         for new_id in tqdm(range(len(new_tokenizer))):
+            # Iterate over non-special tokens only
+            if mapping[new_id][0] not in new_tokenizer.special_tokens_map.values():
+                #new_token = new_tokenizer.convert_ids_to_tokens(new_id)
+                old_tokens = mapping[new_id][1] # list of (ids,weight) in the old tokenizer
 
-            #new_token = new_tokenizer.convert_ids_to_tokens(new_id)
-            old_tokens = mapping[new_id][1] # list of (ids,weight) in the old tokenizer
+                # sort the list such that the smallest weights come first (for numerical stability)
+                old_tokens = sorted(old_tokens, key=lambda x: x[1])
 
-            # sort the list such that the smallest weights come first (for numerical stability)
-            old_tokens = sorted(old_tokens, key=lambda x: x[1])
+                # map tokens to their ids
+                old_ids = [(old_tokenizer.convert_tokens_to_ids(old_token), weight) for old_token, weight in old_tokens]
 
-            # map tokens to their ids
-            old_ids = [(old_tokenizer.convert_tokens_to_ids(old_token), weight) for old_token, weight in old_tokens]
-
-            # we use a weighted average, where the first token in the list has 0.4 weight, the second 0.2, and the remaining 0.4 are equally distributed among all tokens (including the first two)
-            if len(old_ids) > 1:
-                new_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
-                new_output_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_output_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
-            elif len(old_ids) == 1:
-                new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_ids[0][0]]
-                new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_ids[0][0]]
-            else: # use the unknown token embedding if the token is not in the old tokenizer
-                new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_tokenizer.unk_token_id]
-                new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_tokenizer.unk_token_id]
-
-    os.makedirs('output', exist_ok=False)
-    model.save_pretrained('output/')
-    new_tokenizer.save_pretrained('output/')
+                # we use a weighted average, where the first token in the list has 0.4 weight, the second 0.2, and the remaining 0.4 are equally distributed among all tokens (including the first two)
+                if len(old_ids) > 1:
+                    new_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
+                    new_output_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_output_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
+                elif len(old_ids) == 1:
+                    new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_ids[0][0]]
+                    new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_ids[0][0]]
+                else: # use the unknown token embedding if the token is not in the old tokenizer
+                    new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_tokenizer.unk_token_id]
+                    new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_tokenizer.unk_token_id]
 
     return model
 
 if __name__ == "__main__":
     source_tokenizer= "mistralai/Mistral-7B-v0.1"
-    target_tokenizer= "dtai-kuleuven/robbert-2023-dutch-base"
+    target_tokenizer= "tokenizers/it"
 
     corpus = create_aligned_corpus(
         source_language="en",
-        target_language="nl",
-        source_tokenizer="mistralai/Mistral-7B-v0.1",
+        target_language="als",
+        source_tokenizer=source_tokenizer,
         target_tokenizer=target_tokenizer,
+        corpus_list=['allenai/nllb']
     )
 
     mapped_tokens_file = align(
-        corpus, fast_align_path="/Users/pieter/Documents/2024/tik-to-tok/notebooks/fast_align/build/fast_align"
+        corpus, fast_align_path="/cw/dtaijupiter/NoCsBack/dtai/pieterd/projects/tik-to-tok/fast_align/build/fast_align"
     )
 
     tokenized_possible_translations, untokenized_possible_translations = map_tokens(
-        mapped_tokens_file, "mistralai/Mistral-7B-v0.1", "dtai-kuleuven/robbert-2023-dutch-base"
+        mapped_tokens_file, source_tokenizer, target_tokenizer
     )
 
-    smoothed_mapping = smooth_mapping(target_tokenizer, tokenized_possible_translations)
+    smoothed_mapping = extend_mapping(target_tokenizer, tokenized_possible_translations)
 
-    remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
+    model = remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
+    os.makedirs('en-nl/', exist_ok=False)
+    new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
+    model.save_pretrained('en-it/')
+    new_tokenizer.save_pretrained('en-it/')
