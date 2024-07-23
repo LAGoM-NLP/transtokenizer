@@ -489,19 +489,24 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
     return model
 
 if __name__ == "__main__":
-    source_tokenizer= "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    target_tokenizer= "Tweeties/tweety-tatar-base-7b-v24a"
+    # TODO: transform into an Argument Parser!
+    source_language  = "en"
+    source_tokenizer = "mistralai/Mistral-7B-v0.1"
+    target_language  = "nl"
+    target_tokenizer = "dtai-kuleuven/robbert-2023-dutch-base"
+    corpus_list      = ["open_subtitles", "allenai/nllb"]
+    fast_align_path  = f'{home_path}/notebooks/fast_align/build/fast_align"
 
     corpus = create_aligned_corpus(
-        source_language="en",
-        target_language="tt",
+        source_language=source_language,
+        target_language=target_language,
         source_tokenizer=source_tokenizer,
         target_tokenizer=target_tokenizer,
-        corpus_list=["allenai/nllb"]
+        corpus_list=corpus_list
     )
 
     mapped_tokens_file = align(
-        corpus, fast_align_path="/project_antwerp/art2t/fast_align/build/fast_align"
+        corpus, fast_align_path=fast_align_path
     )
 
     tokenized_possible_translations, untokenized_possible_translations = map_tokens(
