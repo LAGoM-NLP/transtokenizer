@@ -23,7 +23,7 @@ MIN_COUNT_REQUIRED_FOR_CONSIDERATION = 20
 
 home_path = os.environ['TT_HOME'] if "TT_HOME" in os.environ else Path("../notebooks/")
 
-
+DEFAUT_SCRIPT_BY_LANG = {'ace': 'Latn', 'ban': 'Latn', 'bjn': 'Latn', 'bug': 'Latn', 'ceb': 'Latn', 'eng': 'Latn', 'fij': 'Latn', 'ilo': 'Latn', 'jav': 'Latn', 'min': 'Latn', 'mri': 'Latn', 'pag': 'Latn', 'plt': 'Latn', 'smo': 'Latn', 'sun': 'Latn', 'war': 'Latn', 'afr': 'Latn', 'aka': 'Latn', 'amh': 'Ethi', 'bam': 'Latn', 'bem': 'Latn', 'cjk': 'Latn', 'dik': 'Latn', 'dyu': 'Latn', 'ewe': 'Latn', 'fon': 'Latn', 'fra': 'Latn', 'fuv': 'Latn', 'gaz': 'Latn', 'hau': 'Latn', 'ibo': 'Latn', 'kam': 'Latn', 'kik': 'Latn', 'kin': 'Latn', 'kmb': 'Latn', 'knc': 'Arab', 'kon': 'Latn', 'lin': 'Latn', 'lua': 'Latn', 'lug': 'Latn', 'luo': 'Latn', 'nso': 'Latn', 'nus': 'Latn', 'nya': 'Latn', 'run': 'Latn', 'sna': 'Latn', 'som': 'Latn', 'sot': 'Latn', 'ssw': 'Latn', 'swh': 'Latn', 'tir': 'Ethi', 'tsn': 'Latn', 'tso': 'Latn', 'tum': 'Latn', 'twi': 'Latn', 'umb': 'Latn', 'wol': 'Latn', 'xho': 'Latn', 'yor': 'Latn', 'zul': 'Latn', 'arb': 'Arab', 'ckb': 'Arab', 'crh': 'Latn', 'diq': 'Latn', 'kmr': 'Latn', 'tat': 'Cyrl', 'tzm': 'Tfng', 'urd': 'Arab', 'asm': 'Beng', 'awa': 'Deva', 'ben': 'Beng', 'bho': 'Deva', 'guj': 'Gujr', 'hin': 'Deva', 'hne': 'Deva', 'kan': 'Knda', 'kas': 'Arab', 'mag': 'Deva', 'mai': 'Deva', 'mal': 'Mlym', 'mar': 'Deva', 'npi': 'Deva', 'ory': 'Orya', 'pan': 'Guru', 'san': 'Deva', 'sat': 'Beng', 'sin': 'Sinh', 'snd': 'Arab', 'tam': 'Taml', 'tel': 'Telu', 'ayr': 'Latn', 'spa': 'Latn', 'azb': 'Arab', 'azj': 'Latn', 'rus': 'Cyrl', 'bak': 'Cyrl', 'kir': 'Cyrl', 'tuk': 'Latn', 'uig': 'Arab', 'uzn': 'Latn', 'bel': 'Cyrl', 'pbt': 'Arab', 'ind': 'Latn', 'bod': 'Tibt', 'bos': 'Latn', 'por': 'Latn', 'prs': 'Arab', 'tgk': 'Cyrl', 'cym': 'Latn', 'dzo': 'Tibt', 'als': 'Latn', 'epo': 'Latn', 'fao': 'Latn', 'fur': 'Latn', 'gla': 'Latn', 'gle': 'Latn', 'grn': 'Latn', 'hat': 'Latn', 'hye': 'Armn', 'kab': 'Latn', 'kac': 'Latn', 'kat': 'Geor', 'kaz': 'Cyrl', 'kbp': 'Latn', 'kea': 'Latn', 'khk': 'Cyrl', 'khm': 'Khmr', 'lao': 'Laoo', 'lij': 'Latn', 'lim': 'Latn', 'lmo': 'Latn', 'ltg': 'Latn', 'ltz': 'Latn', 'lus': 'Latn', 'mlt': 'Latn', 'mni': 'Beng', 'mos': 'Latn', 'mya': 'Mymr', 'pap': 'Latn', 'quy': 'Latn', 'sag': 'Latn', 'scn': 'Latn', 'shn': 'Mymr', 'srd': 'Latn', 'szl': 'Latn', 'taq': 'Latn', 'tgl': 'Latn', 'tpi': 'Latn', 'vec': 'Latn', 'ydd': 'Hebr', 'zho': 'Hans', 'zsm': 'Latn', 'glg': 'Latn', 'oci': 'Latn', 'dan': 'Latn', 'deu': 'Latn', 'isl': 'Latn', 'nld': 'Latn', 'nob': 'Latn', 'swe': 'Latn', 'tur': 'Latn', 'srp': 'Cyrl', 'ukr': 'Cyrl', 'bul': 'Cyrl', 'cat': 'Latn', 'ces': 'Latn', 'ell': 'Grek', 'est': 'Latn', 'fin': 'Latn', 'heb': 'Hebr', 'hrv': 'Latn', 'hun': 'Latn', 'ita': 'Latn', 'jpn': 'Jpan', 'kor': 'Hang', 'lit': 'Latn', 'lvs': 'Latn', 'pes': 'Arab', 'pol': 'Latn', 'ron': 'Latn', 'slk': 'Latn', 'slv': 'Latn', 'vie': 'Latn', 'ast': 'Latn', 'mkd': 'Cyrl'}
 def get_dataset_iterator(dataset_name: str, source_language: str, target_language: str):
     """Utility function to get the iterable of a dataset, mapping different dataset conventions.
 
@@ -33,7 +33,12 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
     """
 
     if dataset_name == "open_subtitles":
-        dataset = load_dataset(dataset_name, lang1=source_language, lang2=target_language, streaming=True)
+        # convert the langauge to a 2-letter code, if needed
+        source_language = Language.get(source_language).language if len(source_language) != 2 else source_language
+        target_language = Language.get(target_language).language if len(target_language) != 2 else target_language
+
+        # load the dataset
+        dataset = load_dataset(dataset_name, lang1=source_language, lang2=target_language, streaming=True, trust_remote_code=True)
 
         # wrap the dataset iterator so it returns a tuple of the source and target sentences
         class DatasetWrapper(Iterator):
@@ -45,12 +50,19 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
                 return example['translation'][source_language], example['translation'][target_language]
 
     elif dataset_name == "allenai/nllb":
-        # map 2-letter language codes to 3-letter language codes (ISO 639-2 Cod from ISO 639-1 Code)
+        # map 2-letter language codes to 3-letter language codes (ISO 639-2 Code from ISO 639-1 Code)
+        src_lang = Language.get(source_language)
+        tgt_lang = Language.get(target_language)
+        src_script = src_lang.script if src_lang.script else DEFAUT_SCRIPT_BY_LANG[src_lang.to_alpha3()]
+        tgt_script = tgt_lang.script if tgt_lang.script else DEFAUT_SCRIPT_BY_LANG[tgt_lang.to_alpha3()]
+
+        # load the dataset
         dataset = load_dataset(
             dataset_name,
-            f"{Language.get(source_language).to_alpha3()}_Latn-{Language.get(target_language).to_alpha3()}_Latn",
+            f"{src_lang.to_alpha3()}_{src_script}-{tgt_lang.to_alpha3()}_{tgt_script}",
             split='train',
             streaming=True,
+            trust_remote_code=True
         )
 
         # wrap the dataset iterator so it returns a tuple of the source and target sentences
@@ -60,9 +72,13 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
 
             def __next__(self):
                 example = next(self.dataset)
+                src_lang = Language.get(source_language)
+                tgt_lang = Language.get(target_language)
+                src_script = src_lang.script if src_lang.script else DEFAUT_SCRIPT_BY_LANG[src_lang.to_alpha3()]
+                tgt_script = tgt_lang.script if tgt_lang.script else DEFAUT_SCRIPT_BY_LANG[tgt_lang.to_alpha3()]
                 return (
-                    example['translation'][f"{Language.get(source_language).to_alpha3()}_Latn"],
-                    example['translation'][f"{Language.get(target_language).to_alpha3()}_Latn"],
+                    example['translation'][f"{src_lang.to_alpha3()}_{src_script}"],
+                    example['translation'][f"{tgt_lang.to_alpha3()}_{tgt_script}"],
                 )
 
     return DatasetWrapper(dataset)
@@ -473,22 +489,28 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
     return model
 
 if __name__ == "__main__":
-    source_tokenizer= "mistralai/Mistral-7B-v0.1"
-    target_tokenizer= "dtai-kuleuven/robbert-2023-dutch-base"
+    # TODO: transform into an Argument Parser!
+    source_language  = "en"
+    source_tokenizer = "mistralai/Mistral-7B-v0.1"
+    target_language  = "nl"
+    target_tokenizer = "dtai-kuleuven/robbert-2023-dutch-base"
+    corpus_list      = ["open_subtitles", "allenai/nllb"]
+    fast_align_path  = f'{home_path}/notebooks/fast_align/build/fast_align"
 
     corpus = create_aligned_corpus(
-        source_language="en",
-        target_language="nl",
-        source_tokenizer="mistralai/Mistral-7B-v0.1",
+        source_language=source_language,
+        target_language=target_language,
+        source_tokenizer=source_tokenizer,
         target_tokenizer=target_tokenizer,
+        corpus_list=corpus_list
     )
 
     mapped_tokens_file = align(
-        corpus, fast_align_path="/Users/pieter/Documents/2024/tik-to-tok/notebooks/fast_align/build/fast_align"
+        corpus, fast_align_path=fast_align_path
     )
 
     tokenized_possible_translations, untokenized_possible_translations = map_tokens(
-        mapped_tokens_file, "mistralai/Mistral-7B-v0.1", "dtai-kuleuven/robbert-2023-dutch-base"
+        mapped_tokens_file, source_tokenizer, target_tokenizer
     )
 
     smoothed_mapping = smooth_mapping(target_tokenizer, tokenized_possible_translations)
