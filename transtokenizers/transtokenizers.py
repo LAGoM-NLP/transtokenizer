@@ -17,9 +17,8 @@ import transformers
 from transformers import AutoModel, AutoTokenizer
 from datasets import load_dataset
 
-
 ALIGNMENT_UNIT = "WORDS"  # "TOKENS" or "WORDS"
-MIN_COUNT_REQUIRED_FOR_CONSIDERATION = 20
+MIN_COUNT_REQUIRED_FOR_CONSIDERATION = 10
 
 home_path = os.environ['TT_HOME'] if "TT_HOME" in os.environ else Path("../notebooks/")
 
@@ -82,7 +81,6 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
                 )
 
     return DatasetWrapper(dataset)
-
 
 def create_aligned_corpus(
     source_language: str,
@@ -161,22 +159,28 @@ def create_aligned_corpus(
 
     return f'{home_path}/alignments/{corpus_list_description}.{source_language}-{target_language}.{OLD_TOKENIZER_FRIENDLY_NAME}-{NEW_TOKENIZER_FRIENDLY_NAME}-{ALIGNMENT_UNIT}.moses'
 
-
 def align(corpus: str, fast_align_path: str = "fast_align") -> str:
     if ".moses" not in corpus:
         raise ValueError("The input file should be a moses file")
 
-    # check if fast_align is installed
-    if os.system(f"{fast_align_path} -h") != 256:
-        raise ValueError(
-            "fast_align is not installed. Please install it from https://github.com/FremyCompany/fast_align"
-        )
+    output_path = corpus.replace(".moses", ".fast_align.tsv")
 
-    # call fast_align
-    os.system(f'{fast_align_path} -i {corpus} -I 7 -p {corpus.replace(".moses", ".fast_align.tsv")} > /dev/null')
+    if os.path.exists(output_path):
 
-    return corpus.replace(".moses", ".fast_align.tsv")
+        print(f"corpus already aligned")
 
+    else:
+
+        # check if fast_align is installed
+        if os.system(f"{fast_align_path} -h") != 256:
+            raise ValueError(
+                "fast_align is not installed. Please install it from https://github.com/FremyCompany/fast_align"
+            )
+
+        # call fast_align
+        os.system(f'{fast_align_path} -i {corpus} -I 7 -p {output_path} > /dev/null')
+
+    return output_path
 
 def map_tokens(
     mapped_tokens_file: str,
@@ -195,7 +199,6 @@ def map_tokens(
     old_tokenizer_vocab = set(old_tokenizer.vocab.keys())
     new_tokenizer_vocab = set(new_tokenizer.vocab.keys())
 
-   
     tokenized_possible_translations = defaultdict(lambda: defaultdict(int))
     untokenized_possible_translations = defaultdict(
         lambda: defaultdict(int)
@@ -362,13 +365,13 @@ def map_tokens(
 
     return tokenized_possible_translations, untokenized_possible_translations
 
-def smooth_mapping(target_tokenizer: str, tokenized_possible_translations: dict) -> dict:
-        
+def smooth_mapping(target_tokenizer: str, tokenized_possible_translations: dict, print_debug=False) -> dict:
+
     new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
 
     # print the first 100 tokens that have no translation
     tmp_count = 0
-    for i, token in enumerate(new_tokenizer.get_vocab()):
+    for i, token in enumerate(tqdm(new_tokenizer.get_vocab())):
         #if tmp_count >= 100: break
         if token not in tokenized_possible_translations:
             tmp_count += 1
@@ -390,7 +393,7 @@ def smooth_mapping(target_tokenizer: str, tokenized_possible_translations: dict)
             # sort the middle tokens by position in the token
             middle_subset_tokens.sort(key=lambda x: token.index(x))
             # print the token, the similar tokens, and the start, end, and middle subset tokens
-            if tmp_count <= 100: print(token, similar_tokens, middle_subset_tokens) #start_subset_tokens[0:3], end_subset_tokens[0:3], middle_subset_tokens[0:3])
+            if print_debug and tmp_count <= 100: print(token, similar_tokens, middle_subset_tokens) #start_subset_tokens[0:3], end_subset_tokens[0:3], middle_subset_tokens[0:3])
             # add the token to the updated dictionary
             if len(similar_tokens) == 0 and len(middle_subset_tokens) == 0: continue
             tokenized_possible_translations[token] = defaultdict(int)
@@ -432,13 +435,29 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
     old_tokenizer = transformers.AutoTokenizer.from_pretrained(source_tokenizer)
     new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
 
+    # add an unk token if none exist
+    if old_tokenizer.unk_token_id is None:
+        if not(old_tokenizer.pad_token_id is None):
+            old_tokenizer.unk_token_id = old_tokenizer.pad_token_id
+            old_tokenizer.unk_token = old_tokenizer.pad_token
+        elif not(old_tokenizer.bos_token_id is None):
+            old_tokenizer.unk_token_id = old_tokenizer.bos_token_id
+            old_tokenizer.unk_token = old_tokenizer.bos_token
+        else:
+            print("WARNING: The old tokenizer had neither UNK, PAD or BOS special tokens")
+            old_tokenizer.unk_token_id = 0
+
     # load the old model
+    print("Loading the source model...")
     model = transformers.AutoModelForCausalLM.from_pretrained(source_model)
 
+    # remap the embeddings
+    print("Remapping the model...")
     with torch.no_grad():
         # get the embeddings of the OLM model
-        old_embeddings = model.get_input_embeddings()
-        old_output_embeddings = model.get_output_embeddings()
+        old_embeddings = model.get_input_embeddings().weight.data
+        old_output_embeddings = model.get_output_embeddings().weight.data
+        tied_weights = model.config.tie_word_embeddings
 
         # change the tokenizer of the OLM model to the one of the RobBERT model, and reinitialize the embeddings
         model.resize_token_embeddings(1) # this is a hack to make the model forget its old tokenizer
@@ -456,6 +475,12 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
         model.config.additional_special_tokens_ids = new_tokenizer.additional_special_tokens_ids
         model.config.tokenizer_class = new_tokenizer.__class__.__name__
 
+        # debug info
+        #print(old_embeddings.shape)
+        #print(old_output_embeddings.shape)
+        #print(new_embeddings.weight.data.shape)
+        #print(new_output_embeddings.weight.data.shape)
+
         # for each token in the new tokenizer, find the corresponding tokens in the old tokenizer, and average their embeddings
         from tqdm import tqdm
         from functools import reduce
@@ -470,21 +495,18 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
 
             # map tokens to their ids
             old_ids = [(old_tokenizer.convert_tokens_to_ids(old_token), weight) for old_token, weight in old_tokens]
+            old_ids = [(old_id if not(old_id is None) else old_tokenizer.unk_token_id, weight) for old_id, weight in old_ids]
 
             # we use a weighted average, where the first token in the list has 0.4 weight, the second 0.2, and the remaining 0.4 are equally distributed among all tokens (including the first two)
             if len(old_ids) > 1:
-                new_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
-                new_output_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_output_embeddings.weight.data[old_id]*weight for old_id, weight in old_ids])
+                new_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_embeddings[old_id]*weight for old_id, weight in old_ids])
+                if not(tied_weights): new_output_embeddings.weight.data[new_id] = reduce(lambda a, b: a.add_(b), [old_output_embeddings[old_id]*weight for old_id, weight in old_ids])
             elif len(old_ids) == 1:
-                new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_ids[0][0]]
-                new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_ids[0][0]]
+                new_embeddings.weight.data[new_id] = old_embeddings[old_ids[0][0]]
+                if not(tied_weights): new_output_embeddings.weight.data[new_id] = old_output_embeddings[old_ids[0][0]]
             else: # use the unknown token embedding if the token is not in the old tokenizer
-                new_embeddings.weight.data[new_id] = old_embeddings.weight.data[old_tokenizer.unk_token_id]
-                new_output_embeddings.weight.data[new_id] = old_output_embeddings.weight.data[old_tokenizer.unk_token_id]
-
-    os.makedirs('output', exist_ok=False)
-    model.save_pretrained('output/')
-    new_tokenizer.save_pretrained('output/')
+                new_embeddings.weight.data[new_id] = old_embeddings[old_tokenizer.unk_token_id]
+                if not(tied_weights): new_output_embeddings.weight.data[new_id] = old_output_embeddings[old_tokenizer.unk_token_id]
 
     return model
 
@@ -515,4 +537,8 @@ if __name__ == "__main__":
 
     smoothed_mapping = smooth_mapping(target_tokenizer, tokenized_possible_translations)
 
-    remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
+    model = remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
+
+    os.makedirs('output', exist_ok=False)
+    model.save_pretrained('output/')
+    new_tokenizer.save_pretrained('output/')
