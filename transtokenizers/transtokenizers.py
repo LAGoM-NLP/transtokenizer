@@ -511,7 +511,7 @@ def remap_model(source_tokenizer: str, target_tokenizer: str, mapping: list[Tupl
     return model
 
 if __name__ == "__main__":
-    source_tokenizer= "meta-llama/Meta-Llama-3.1-8B-Instruct"
+    source_tokenizer= "mistralai/Mistral-Nemo-Instruct-2407"#"meta-llama/Meta-Llama-3.1-8B-Instruct"
     target_tokenizer= "Tweeties/tweety-tatar-base-7b-v24a"
 
     corpus = create_aligned_corpus(
@@ -536,4 +536,5 @@ if __name__ == "__main__":
 
     os.makedirs('output', exist_ok=False)
     model.save_pretrained('output/')
+    new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
     new_tokenizer.save_pretrained('output/')
