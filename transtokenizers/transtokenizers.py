@@ -541,4 +541,5 @@ if __name__ == "__main__":
 
     os.makedirs('output', exist_ok=False)
     model.save_pretrained('output/')
+    new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
     new_tokenizer.save_pretrained('output/')
