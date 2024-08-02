@@ -610,7 +610,7 @@ if __name__ == "__main__":
     target_language  = "nl"
     target_tokenizer = "dtai-kuleuven/robbert-2023-dutch-base"
     corpus_list      = ["open_subtitles", "allenai/nllb"]
-    fast_align_path  = f'{home_path}/notebooks/fast_align/build/fast_align"
+    fast_align_path  = f"{home_path}/notebooks/fast_align/build/fast_align"
 
     corpus = create_aligned_corpus(
         source_language=source_language,
@@ -631,7 +631,7 @@ if __name__ == "__main__":
     smoothed_mapping = smooth_mapping(target_tokenizer, tokenized_possible_translations)
 
     model = remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
-    
+
     os.makedirs('output', exist_ok=False)
     model.save_pretrained('output/')
     new_tokenizer = transformers.AutoTokenizer.from_pretrained(target_tokenizer)
