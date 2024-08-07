@@ -1,5 +1,5 @@
 import os
-from transtokenizers.transtokenizers import align, create_aligned_corpus, extend_mapping, map_tokens, remap_model
+from transtokenizers.transtokenizers import align, create_aligned_corpus, smooth_mapping, map_tokens, remap_model
 from transformers import AutoTokenizer
 import datasets
 
@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     tokenized_possible_translations, untokenized_possible_translations = map_tokens(mapped_tokens_file, source_tokenizer, target_tokenizer)
 
-    smoothed_mapping = extend_mapping(target_tokenizer, tokenized_possible_translations)
+    smoothed_mapping = smooth_mapping(target_tokenizer, tokenized_possible_translations)
 
     model = remap_model(source_tokenizer, target_tokenizer, smoothed_mapping, source_tokenizer)
     os.makedirs(export_dir, exist_ok=False)

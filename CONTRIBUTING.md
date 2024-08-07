@@ -102,7 +102,7 @@ Before you submit a pull request, check that it meets these guidelines:
 ## Tips
 
 ```
-$ poetry run pytest tests/test_transtokenizer.py
+$ poetry run pytest tests/tests/test_tiktotok.py
 ```
 
 To run a subset of tests.
