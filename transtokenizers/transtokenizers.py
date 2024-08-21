@@ -125,7 +125,9 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
         target_language = Language.get(target_language).language if len(target_language) != 2 else target_language
 
         # load the dataset
-        dataset = load_dataset(dataset_name, lang1=source_language, lang2=target_language, streaming=True, trust_remote_code=True)
+        languages = [source_language, target_language]
+        languages.sort()
+        dataset = load_dataset(dataset_name, lang1=languages[0], lang2=languages[1], streaming=True, trust_remote_code=True)
 
         # wrap the dataset iterator so it returns a tuple of the source and target sentences
         class DatasetWrapper(Iterator):
