@@ -145,10 +145,16 @@ def get_dataset_iterator(dataset_name: str, source_language: str, target_languag
         src_script = src_lang.script if src_lang.script else DEFAUT_SCRIPT_BY_LANG[src_lang.to_alpha3()]
         tgt_script = tgt_lang.script if tgt_lang.script else DEFAUT_SCRIPT_BY_LANG[tgt_lang.to_alpha3()]
 
+        languages = [
+            src_lang.to_alpha3() + '_' + src_script,
+            tgt_lang.to_alpha3() + '_' + tgt_script
+        ]
+        languages.sort()
+
         # load the dataset
         dataset = load_dataset(
             dataset_name,
-            f"{src_lang.to_alpha3()}_{src_script}-{tgt_lang.to_alpha3()}_{tgt_script}",
+            languages[0] + '-' + languages[1],
             split='train',
             streaming=True,
             trust_remote_code=True
